@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Credit Card Fraud Detection Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .fraud {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        .legitimate {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Advanced Credit Card Fraud Detection Demo</h1>
+        <form id="fraudForm">
+            <label for="cardNumber">Card Number:</label>
+            <input type="text" id="cardNumber" required>
+
+            <label for="amount">Transaction Amount:</label>
+            <input type="number" id="amount" required>
+
+            <label for="ipAddress">IP Address:</label>
+            <input type="text" id="ipAddress" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+
+            <label for="shippingAddress">Shipping Address:</label>
+            <input type="text" id="shippingAddress" required>
+
+            <label for="billingAddress">Billing Address:</label>
+            <input type="text" id="billingAddress" required>
+
+            <label for="purchaseType">Purchase Type:</label>
+            <select id="purchaseType">
+                <option value="single">Single Item</option>
+                <option value="multiple">Multiple of Same Item</option>
+            </select>
+
+            <button type="submit">Check Transaction</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('fraudForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            detectFraud();
+        });
+
+        function detectFraud() {
+            const cardNumber = document.getElementById('cardNumber').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const ipAddress = document.getElementById('ipAddress').value;
+            const email = document.getElementById('email').value;
+            const shippingAddress = document.getElementById('shippingAddress').value;
+            const billingAddress = document.getElementById('billingAddress').value;
+            const purchaseType = document.getElementById('purchaseType').value;
+
+            let fraudFlags = [];
+
+            // Check card number
+            if (cardNumber.length !== 16 || isNaN(Number(cardNumber))) {
+                fraudFlags.push("Invalid card number");
+            }
+
+            // Check amount
+            if (amount > 10000) {
+                fraudFlags.push("High transaction amount");
+            }
+
+            // Check IP address (simplified check)
+            if (!ipAddress.match(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/)) {
+                fraudFlags.push("Suspicious IP address");
+            }
+
+            // Check email (simplified check)
+            if (!email.includes('@') || email.includes('spam')) {
+                fraudFlags.push("Suspicious email");
+            }
+
+            // Check addresses
+            if (shippingAddress !== billingAddress) {
+                fraudFlags.push("Shipping and billing addresses don't match");
+            }
+
+            // Check purchase type
+            if (purchaseType === 'multiple') {
+                fraudFlags.push("Multiple purchases of the same item");
+            }
+
+            const resultDiv = document.getElementById('result');
+            if (fraudFlags.length > 0) {
+                resultDiv.innerHTML = `<strong>Potential fraud detected:</strong><br>${fraudFlags.join('<br>')}`;
+                resultDiv.className = 'fraud';
+            } else {
+                resultDiv.textContent = 'Transaction appears to be legitimate.';
+                resultDiv.className = 'legitimate';
+            }
+        }
+    </script>
+</body>
+</html>
